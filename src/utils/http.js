@@ -11,20 +11,32 @@ const getRequestKey = (config) => {
   return `${config.method}_${config.url}_${JSON.stringify(config.params)}_${JSON.stringify(config.data)}`
 }
 
-const removePendingRequest = (config) => {
-  const requestKey = getRequestKey(config)
-  if (pendingRequest.has(requestKey)) {
-    const controller = pendingRequest.get(requestKey)
+const deletePendingRequest = (config) => {
+  const key = getRequestKey(config)
+  pendingRequest.delete(key)
+}
+
+const abortPendingRequest = (config) => {
+  const key = getRequestKey(config)
+  const controller = pendingRequest.get(key)
+
+  if (controller) {
     controller.abort()
-    pendingRequest.delete(requestKey)
+    pendingRequest.delete(key)
   }
+}
+
+export const abortAllRequests = () => {
+  pendingRequest.forEach((value, _key) => {
+    value.abort()
+  })
+  pendingRequest.clear()
 }
 
 // Add a request interceptor
 api.interceptors.request.use(
   (config) => {
-    // Do something before request is sent
-    removePendingRequest(config)
+    abortPendingRequest(config)
 
     const controller = new AbortController()
     config.signal = controller.signal
@@ -35,7 +47,6 @@ api.interceptors.request.use(
     return config
   },
   (error) => {
-    // Do something with request error
     return Promise.reject(error)
   },
 )
@@ -43,20 +54,17 @@ api.interceptors.request.use(
 // Add a response interceptor
 api.interceptors.response.use(
   (response) => {
-    // Any status code that lie within the range of 2xx cause this function to trigger
-    // Do something with response data
-    removePendingRequest(response.config)
+    deletePendingRequest(response.config)
     return response
   },
   (error) => {
-    // Any status codes that falls outside the range of 2xx cause this function to trigger
-    // Do something with response error
-    if (error.config) {
-      removePendingRequest(error.config)
+    if (axios.isCancel(error)) {
+      deletePendingRequest(error.config)
+      return Promise.reject(error)
     }
 
-    if (axios.isCancel(error)) {
-      return Promise.reject({ data: null })
+    if (error.config) {
+      deletePendingRequest(error.config)
     }
 
     return Promise.reject(error)
