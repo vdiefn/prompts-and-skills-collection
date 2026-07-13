@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { User, SwitchButton } from '@element-plus/icons-vue'
+import { User } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -50,19 +50,18 @@ const handleLogout = () => {
           <div class="flex-grow" />
 
           <div class="user-profile-wrapper">
+            <el-dropdown placement="bottom">
             <div class="avatar-container">
               <el-avatar :size="32" :icon="User" class="custom-avatar" />
               <span class="username-text">{{ userInfo?.username }}</span>
-              <el-button
-                type="primary"
-                link
-                :icon="SwitchButton"
-                class="logout-btn"
-                title="登出"
-                @click="handleLogout"
-              />
             </div>
-          </div>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="handleLogout">登出</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
         </el-menu>
       </div>
     </el-header>
@@ -119,6 +118,7 @@ const handleLogout = () => {
   display: flex;
   align-items: center;
   gap: 8px;
+  cursor: pointer;
   outline: none;
 }
 
