@@ -16,12 +16,10 @@ const userInfo = ref({
 })
 
 const handleLogout = () => {
-  isLoggedIn.value = false
   userInfo.value = null
 
   ElMessage.success('已安全登出')
 
-  // 登出後導回首頁
   router.push('/login')
 }
 </script>
@@ -48,19 +46,13 @@ const handleLogout = () => {
             我的最愛
           </el-menu-item>
           <div class="flex-grow" />
-
           <div class="user-profile-wrapper">
-            <el-dropdown placement="bottom">
             <div class="avatar-container">
-              <el-avatar :size="32" :icon="User" class="custom-avatar" />
+              <el-avatar class="custom-avatar" :size="40" :icon="User"/>
               <span class="username-text">{{ userInfo?.username }}</span>
+              <el-button link @click="handleLogout">登出</el-button>
             </div>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item @click="handleLogout">登出</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+
         </div>
         </el-menu>
       </div>
@@ -117,8 +109,7 @@ const handleLogout = () => {
 .avatar-container {
   display: flex;
   align-items: center;
-  gap: 8px;
-  cursor: pointer;
+  gap: 1rem;
   outline: none;
 }
 
@@ -131,9 +122,5 @@ const handleLogout = () => {
   font-size: 14px;
   color: #606266;
   font-weight: 500;
-}
-
-.avatar-container:hover .username-text {
-  color: #409eff;
 }
 </style>
