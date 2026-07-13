@@ -1,3 +1,15 @@
+<script setup lang="ts">
+import { Menu, Grid, Back } from '@element-plus/icons-vue'
+import { ElMessage } from "element-plus"
+import { useRouter } from "vue-router"
+
+const router = useRouter()
+const handleLogout = () => {
+  ElMessage.success('已安全登出')
+
+  router.push('/admin/login')
+}
+</script>
 <template>
   <el-container class="admin-layout">
     <el-aside
@@ -30,16 +42,10 @@
     <el-container>
       <el-header class="admin-header">
         <div class="flex-grow" />
-        <el-dropdown>
-          <span class="el-dropdown-link">
-            管理員 <el-icon><arrow-down /></el-icon>
-          </span>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-menu-item>登出</el-dropdown-menu-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+        <div class="user-profile-wrapper">
+          <div class="username-text">管理員</div>
+          <el-button link @click="handleLogout">登出</el-button>
+        </div>
       </el-header>
 
       <el-main class="admin-main">
@@ -48,10 +54,6 @@
     </el-container>
   </el-container>
 </template>
-
-<script setup lang="ts">
-import { Menu, Grid, Back, ArrowDown } from '@element-plus/icons-vue'
-</script>
 
 <style scoped>
 .admin-layout {
@@ -117,9 +119,11 @@ import { Menu, Grid, Back, ArrowDown } from '@element-plus/icons-vue'
   background-color: #f0f2f5;
 }
 
-.el-dropdown-link {
-  cursor: pointer;
+.user-profile-wrapper {
   display: flex;
   align-items: center;
+  height: 100%;
+  padding: 0 20px;
+  gap: 1rem;
 }
 </style>

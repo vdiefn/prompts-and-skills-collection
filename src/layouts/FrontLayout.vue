@@ -52,8 +52,7 @@ const handleLogout = () => {
               <span class="username-text">{{ userInfo?.username }}</span>
               <el-button link @click="handleLogout">登出</el-button>
             </div>
-
-        </div>
+          </div>
         </el-menu>
       </div>
     </el-header>
