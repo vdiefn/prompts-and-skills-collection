@@ -1,4 +1,5 @@
 const pluginVue = require('eslint-plugin-vue')
+const globals = require('globals')
 
 module.exports = [
   ...pluginVue.configs['flat/recommended'],
