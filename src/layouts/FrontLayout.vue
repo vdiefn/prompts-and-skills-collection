@@ -15,9 +15,6 @@
           :ellipsis="false"
           class="custom-menu"
         >
-          <el-menu-item index="/skills">
-            技能列表
-          </el-menu-item>
           <el-menu-item index="/my-favorite">
             我的最愛
           </el-menu-item>
