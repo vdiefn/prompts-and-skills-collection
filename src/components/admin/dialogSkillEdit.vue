@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted, reactive, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 import { MdEditor } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
@@ -10,6 +10,9 @@ const emit = defineEmits(['success'])
 const visible = ref(false)
 const loading = ref(false)
 const categoryOptions = ref([])
+const inputVisible = ref(false)
+const InputRef = ref()
+const inputValue = ref('')
 
 const form = reactive({
   id: null,
@@ -23,16 +26,26 @@ const form = reactive({
   updatedAt:''
 })
 
+const getInitFormData = () => ({
+  id: null,
+  title: '',
+  categoryId: null,
+  tags: [],
+  content: '',
+  useCase: '',
+  exampleInput: ''
+})
 
 const open = async (id) => {
   visible.value = true
   //loading.value = true
 
   // 重置表單與時間
-  resetForm()
+  Object.assign(form, getInitFormData())
 
-  try {
-    console.log('後台彈窗載入單筆詳細資料，ID:', id)
+  if(id) {
+    try {
+    console.log('編輯')
     // const res = await reqSkillDetail(id)
     // const data = res.data
 
@@ -49,19 +62,21 @@ const open = async (id) => {
       updatedAt: "2026-07-13 15:00:00"
     }
 
-    Object.assign(form, mockData)
+      Object.assign(form, mockData)
 
-  } catch (error) {
-    ElMessage.error('載入資料失敗')
-    visible.value = false
-  } finally {
-    loading.value = false
+    } catch (error) {
+      ElMessage.error('載入資料失敗')
+      visible.value = false
+    } finally {
+      loading.value = false
+    }
+  } else {
+    Object.assign(form, form)
   }
+
 }
 
-/**
- * 處理更新提交
- */
+
 const handleSubmit = async () => {
   if (!form.title.trim()) return ElMessage.warning('請輸入標題')
   if (!form.categoryId) return ElMessage.warning('請選擇所屬類別')
@@ -72,30 +87,48 @@ const handleSubmit = async () => {
   try {
     // 組合乾淨的 Payload
     const updatePayload = {
-      id: form.id,
+      id: form.id? form.id: '',
       title: form.title.trim(),
       categoryId: form.categoryId,
       tags: form.tags,
       content: form.content,
       useCase: form.useCase.trim(),
-      exampleInput: form.exampleInput.trim(),
+      exampleInput: form.exampleInput?.trim() || '',
       updatedAt: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-      createdAt: form.createdAt
+      createdAt: form.id? form.createdAt : dayjs().format('YYYY-MM-DD HH:mm:ss')
     }
-
     console.log('後台彈窗發送更新 API:', updatePayload)
-    // await reqUpdateSkill(updatePayload)
-
-    ElMessage.success('更新成功！')
-    visible.value = false
+    if(form.id){
+      // await reqUpdateSkill(updatePayload)
+      ElMessage.success('更新成功！')
+    } else {
+      // await reqCreateSkill(updatePayload)
+      ElMessage.success('新增成功！')
+    }
     emit('success')
+    visible.value = false
   } catch (error) {
     ElMessage.error('更新失敗')
   }
 }
 
-const resetForm = () => {
-  form.value = { id: null, title: '', categoryId: null, tags: [], content: '', useCase: '', exampleInput: '', createdAt: '', updatedAt: '' }
+const handleClose = (tag) => {
+  form.tags.splice(form.tags.indexOf(tag), 1)
+}
+
+const showInput = () => {
+  inputVisible.value = true
+  nextTick(() => {
+    InputRef.value.input.focus()
+  })
+}
+
+const handleInputConfirm = () => {
+  if (inputValue.value) {
+    form.tags.push(inputValue.value)
+  }
+  inputVisible.value = false
+  inputValue.value = ''
 }
 
 defineExpose({ open })
@@ -138,16 +171,30 @@ onMounted(() => {
         </el-col>
       </el-row>
 
-      <el-form-item label="標籤陣列" required>
-        <el-select
-          v-model="form.tags"
-          multiple
-          filterable
-          allow-create
-          default-first-option
-          placeholder="請輸入標籤並按 Enter"
-          style="width: 100%;"
-        />
+      <el-form-item label="標籤" required>
+        <div class="tag-wrapper">
+          <el-tag
+            v-for="tag in form.tags"
+            :key="tag"
+            closable
+            :disable-transitions="false"
+            @close="handleClose(tag)"
+            effect='plain'
+          >
+          {{ tag }}
+           </el-tag>
+           <el-input
+            v-if="inputVisible"
+            ref="InputRef"
+            size="small"
+            v-model="inputValue"
+            @keyup.enter="handleInputConfirm"
+            @blur="handleInputConfirm"
+          />
+          <el-button v-else class="button-new-tag" size="small" @click="showInput">
+            + New Tag
+          </el-button>
+        </div>
       </el-form-item>
 
       <el-form-item label="適用情境" required>
@@ -239,5 +286,10 @@ onMounted(() => {
 .dialog-md-wrapper :deep(.md-editor-main) {
   width: 100% !important;
   min-width: 0 !important;
+}
+
+.tag-wrapper {
+  display: flex;
+  gap: 5px;
 }
 </style>

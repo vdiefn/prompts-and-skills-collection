@@ -10,6 +10,10 @@ const handleEditSkill = (id) => {
   dialogSkillEditRef.value.open(id)
 }
 
+const handleCreateSkill = () => {
+  dialogSkillEditRef.value.open()
+}
+
 const handleDeleteSkill = async (id) => {
   if (!id) return ElMessage({ type: 'error', message: '請提供正確資訊' })
   try {
@@ -45,9 +49,13 @@ const tableData = [
 ]
 </script>
 <template>
-  <div>
-    <h2>Prompt 管理</h2>
-    <el-card style="margin-top: 20px">
+  <div class="container">
+    <div class="upper-wrapper">
+      <h2>Prompt 管理</h2>
+      <el-button type="primary" @click="handleCreateSkill">新增Skill</el-button>
+    </div>
+
+    <el-card>
       <el-table :data="tableData" style="width: 100%">
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="title" label="名稱" />
@@ -63,3 +71,16 @@ const tableData = [
   </div>
   <DialogSkillEdit ref="dialogSkillEditRef" />
 </template>
+<style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.upper-wrapper {
+  display: flex;
+  justify-content: space-between;
+
+}
+</style>
