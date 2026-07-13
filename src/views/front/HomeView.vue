@@ -1,8 +1,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { Search, Star, StarFilled } from '@element-plus/icons-vue'
+import DialogSkillDetail from '@/components/dialogSkillDetail.vue'
 // import { reqSkills, reqCategories, reqAddFavorite, reqRemoveFavorite } from '@/api'
 
+const dialogSkillDetailRef = ref(null)
 // 搜尋與篩選條件
 const keyword = ref("")
 const category = ref("")
@@ -89,8 +91,7 @@ const toggleFavorite = async (item) => {
 
 // 查看詳情
 const handleViewDetail = (id) => {
-  console.log('查看詳情，ID：', id)
-  // router.push(`/skills/${id}`)
+  dialogSkillDetailRef.value.open(id)
 }
 
 onMounted(() => {
@@ -191,6 +192,7 @@ onMounted(() => {
       </el-card>
     </div>
   </div>
+  <DialogSkillDetail ref="dialogSkillDetailRef" />
 </template>
 <style scoped>
 .home-container {
