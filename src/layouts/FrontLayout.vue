@@ -1,10 +1,38 @@
+<script setup>
+import { ref, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import { User, SwitchButton } from '@element-plus/icons-vue'
+
+const route = useRoute()
+const router = useRouter()
+
+const activeMenu = computed(() => {
+  return route.path
+})
+
+const userInfo = ref({
+  username: '金XX'
+})
+
+const handleLogout = () => {
+  isLoggedIn.value = false
+  userInfo.value = null
+
+  ElMessage.success('已安全登出')
+
+  // 登出後導回首頁
+  router.push('/login')
+}
+</script>
+
 <template>
   <el-container class="front-layout">
     <el-header class="header">
       <div class="header-container">
         <div
           class="logo"
-          @click="$router.push('/')"
+          @click="router.push('/')"
         >
           Prompt 收藏庫
         </div>
@@ -14,16 +42,27 @@
           :router="true"
           :ellipsis="false"
           class="custom-menu"
+          :default-active="activeMenu"
         >
           <el-menu-item index="/my-favorite">
             我的最愛
           </el-menu-item>
-
           <div class="flex-grow" />
 
-          <el-menu-item index="/login">
-            登入
-          </el-menu-item>
+          <div class="user-profile-wrapper">
+            <div class="avatar-container">
+              <el-avatar :size="32" :icon="User" class="custom-avatar" />
+              <span class="username-text">{{ userInfo?.username }}</span>
+              <el-button
+                type="primary"
+                link
+                :icon="SwitchButton"
+                class="logout-btn"
+                title="登出"
+                @click="handleLogout"
+              />
+            </div>
+          </div>
         </el-menu>
       </div>
     </el-header>
@@ -37,61 +76,64 @@
 </template>
 
 <style scoped>
-/* 全域佈局設定 */
-.front-layout {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* 導覽列樣式調整 */
 .header {
-  background-color: #f6f7f8;
-  border-bottom: 1px solid var(--el-border-color-light);
-  padding: 0;
-  height: 60px;
+  border-bottom: 1px solid #dcdfe6;
+  background-color: #ffffff;
 }
 
 .header-container {
-  max-width: 75%;
-  width: 100%;
-  margin: 0 auto;
   display: flex;
   align-items: center;
   height: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .logo {
+  font-size: 18px;
   font-weight: bold;
-  font-size: 1.2rem;
-  margin-right: 20px;
+  color: #409eff;
   cursor: pointer;
-  white-space: nowrap;
+  margin-right: 20px;
+  flex-shrink: 0;
 }
 
 .custom-menu {
-  flex-grow: 1;
-  background-color: #f6f7f8 !important;
-}
-
-.custom-menu .el-menu-item {
-  background-color: #f6f7f8 !important;
+  flex: 1;
   border-bottom: none !important;
+  display: flex;
+  align-items: center;
 }
-
 .flex-grow {
   flex-grow: 1;
 }
 
-.main-content {
-  background-color: #f5f7fa;
-  padding: 20px 0;
-  flex-grow: 1;
+.user-profile-wrapper {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 20px;
 }
 
-.main-container {
-  max-width: 75%;
-  width: 100%;
-  margin: 0 auto;
+.avatar-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  outline: none;
+}
+
+.custom-avatar {
+  background-color: #ecf5ff;
+  color: #409eff;
+}
+
+.username-text {
+  font-size: 14px;
+  color: #606266;
+  font-weight: 500;
+}
+
+.avatar-container:hover .username-text {
+  color: #409eff;
 }
 </style>
