@@ -35,6 +35,12 @@ const routes = [
         component: () => import('@/views/front/MyFavoriteView.vue'),
         meta: { requiresAuth: true }, // 需登入
       },
+      // 錯誤路由處理 (404 頁面)
+      {
+        path: '/:pathMatch(.*)*',
+        name: 'NotFound',
+        component: () => import('@/views/NotFound.vue'),
+      },
     ],
   },
   // 後台路由
@@ -62,12 +68,6 @@ const routes = [
         meta: { requiresAuth: true, requiresAdmin: true }, // 需登入且為管理員
       },
     ],
-  },
-  // 錯誤路由處理 (404 頁面)
-  {
-    path: '/:pathMatch(.*)*',
-    name: 'NotFound',
-    component: () => import('@/views/NotFound.vue'),
   },
 ]
 
