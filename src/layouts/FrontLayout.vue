@@ -27,9 +27,6 @@
           <el-menu-item index="/login">
             登入
           </el-menu-item>
-          <el-menu-item>
-            登入
-          </el-menu-item>
         </el-menu>
       </div>
     </el-header>

@@ -5,7 +5,7 @@ export const reqCategories = () => {
   return api.get('/categories')
 }
 
-// 取得 Prompt / Skill 列表 (已登入，支援 params: { keyword, categoryId })
+// 取得 Prompt / Skill 列表
 export const reqSkills = (params) => {
   return api.get('/skills', { params })
 }
